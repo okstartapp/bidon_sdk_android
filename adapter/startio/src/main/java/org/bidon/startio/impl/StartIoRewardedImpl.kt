@@ -66,7 +66,15 @@ internal class StartIoRewardedImpl :
 
     override fun show(activity: Activity) {
         if (isAdReadyToShow) {
-            startAppAd?.showAd(showListener)
+            startAppAd?.let {
+                it.setVideoListener {
+                    logInfo(TAG, "onVideoCompleted")
+                    getAd()?.let {
+                        emitEvent(AdEvent.OnReward(it, null))
+                    }
+                }
+                it.showAd(showListener)
+            }
         } else {
             emitEvent(AdEvent.ShowFailed(BidonError.AdNotReady))
         }
